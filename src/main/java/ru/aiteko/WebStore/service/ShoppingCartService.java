@@ -27,7 +27,14 @@ public class ShoppingCartService {
                 .orElseThrow(() -> new EntityNotFoundException("User with ID " + userId + " not found"));
         Products product = productRepository.findById(productId)
                 .orElseThrow(() -> new EntityNotFoundException("Product with ID " + productId + " not found"));
-        ShoppingCarts shoppingCart = user.getShoppingCarts().iterator().next(); // Предполагаем, что у пользователя всегда есть корзина
+        Set<ShoppingCarts> userShoppingCarts = user.getShoppingCarts();
+        if (userShoppingCarts.isEmpty()) {
+            // Если у пользователя нет корзины, создаем новую
+            ShoppingCarts shoppingCart = new ShoppingCarts();
+            shoppingCart.setUser(user);
+            userShoppingCarts.add(shoppingCart);
+        }
+        ShoppingCarts shoppingCart = userShoppingCarts.iterator().next();
         ShoppingCartProducts cartProduct = new ShoppingCartProducts();
         cartProduct.setShoppingCart(shoppingCart);
         cartProduct.setProduct(product);
