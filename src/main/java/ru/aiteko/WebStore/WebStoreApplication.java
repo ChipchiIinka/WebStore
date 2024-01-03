@@ -9,7 +9,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import ru.aiteko.WebStore.entity.Role;
 import ru.aiteko.WebStore.entity.Users;
 import ru.aiteko.WebStore.repository.UserRepository;
-
 import java.util.Collections;
 
 @OpenAPIDefinition(
@@ -22,7 +21,7 @@ import java.util.Collections;
 @RequiredArgsConstructor
 @SpringBootApplication
 public class WebStoreApplication {
-	public static void main(String[] args) throws Throwable {
+	public static void main(String[] args){
 		SpringApplication.run(WebStoreApplication.class, args);
 	}
 

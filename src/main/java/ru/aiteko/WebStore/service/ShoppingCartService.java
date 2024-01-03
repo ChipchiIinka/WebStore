@@ -10,9 +10,7 @@ import ru.aiteko.WebStore.entity.ShoppingCarts;
 import ru.aiteko.WebStore.entity.Users;
 import ru.aiteko.WebStore.repository.ProductRepository;
 import ru.aiteko.WebStore.repository.UserRepository;
-
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 
 
@@ -20,6 +18,7 @@ import java.util.Set;
 @Service
 @RequiredArgsConstructor
 public class ShoppingCartService {
+
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
 
@@ -35,6 +34,7 @@ public class ShoppingCartService {
         shoppingCart.getProducts().add(cartProduct.getProduct());
         userRepository.save(user);
     }
+
     public Set<Products> getUserShoppingCartProducts(long userId) {
         Users user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User with ID " + userId + " not found"));

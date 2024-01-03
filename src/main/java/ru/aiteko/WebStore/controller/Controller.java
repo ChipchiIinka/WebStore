@@ -20,7 +20,6 @@ import ru.aiteko.WebStore.service.NewsService;
 import ru.aiteko.WebStore.service.ProductService;
 import ru.aiteko.WebStore.service.ShoppingCartService;
 import ru.aiteko.WebStore.service.UserService;
-
 import java.util.List;
 import java.util.Set;
 

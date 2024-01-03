@@ -10,7 +10,6 @@ import ru.aiteko.WebStore.entity.views.UserView;
 import java.util.HashSet;
 import java.util.Set;
 
-
 @Entity
 @Table (name = "users")
 @Getter
@@ -44,7 +43,6 @@ public class Users {
     @Enumerated(EnumType.STRING)
     @Schema(hidden = true)
     private Set<Role> role;
-
 
     @OneToMany(mappedBy = "user")
     @Schema(hidden = true)

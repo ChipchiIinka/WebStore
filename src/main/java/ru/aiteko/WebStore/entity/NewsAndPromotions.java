@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Schema(description = "News entity")
 public class NewsAndPromotions {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Schema(hidden = true)

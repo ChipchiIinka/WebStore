@@ -1,6 +1,5 @@
 package ru.aiteko.WebStore.entity;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,6 +11,7 @@ import lombok.Setter;
 @Table(name = "shopping_cart_products")
 @NoArgsConstructor
 public class ShoppingCartProducts {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)

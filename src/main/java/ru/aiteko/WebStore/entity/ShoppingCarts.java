@@ -13,6 +13,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 public class ShoppingCarts {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
@@ -25,6 +26,7 @@ public class ShoppingCarts {
             inverseJoinColumns = @JoinColumn(name = "product_id")
     )
     private Set<Products> products = new HashSet<>();
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private Users user;

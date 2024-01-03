@@ -13,6 +13,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class NewsService {
+
     private final NewsRepository newsRepository;
 
     public List<NewsAndPromotions> getAllNews() {

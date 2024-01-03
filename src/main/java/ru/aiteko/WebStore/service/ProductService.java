@@ -8,19 +8,17 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.aiteko.WebStore.dto.request.ProductPageRequestDto;
 import ru.aiteko.WebStore.entity.Products;
-import ru.aiteko.WebStore.entity.Role;
 import ru.aiteko.WebStore.entity.Users;
 import ru.aiteko.WebStore.repository.ProductRepository;
 import ru.aiteko.WebStore.repository.UserRepository;
-
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class ProductService {
+
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
 
