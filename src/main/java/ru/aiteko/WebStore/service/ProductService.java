@@ -2,16 +2,14 @@ package ru.aiteko.WebStore.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import ru.aiteko.WebStore.dto.request.ProductPageRequestDto;
+import ru.aiteko.WebStore.dto.ProductDto;
 import ru.aiteko.WebStore.entity.Products;
-import ru.aiteko.WebStore.entity.Users;
+import ru.aiteko.WebStore.exception.AitekoException;
+import ru.aiteko.WebStore.exception.ErrorType;
 import ru.aiteko.WebStore.repository.ProductRepository;
-import ru.aiteko.WebStore.repository.UserRepository;
-import java.time.LocalDateTime;
+import ru.aiteko.WebStore.service.mapper.ProductMapper;
+
 import java.util.List;
 
 @Slf4j
@@ -20,45 +18,51 @@ import java.util.List;
 public class ProductService {
 
     private final ProductRepository productRepository;
-    private final UserRepository userRepository;
+    private final ProductMapper productMapper;
 
-    public Page<Products> getAllProducts(ProductPageRequestDto request) {
-        log.info("Fetching all products with page: {} and size: {}", request.getPage(), request.getSize());
-        return productRepository.findAll(PageRequest.of(request.getPage(), request.getSize()));
+    public List<ProductDto> getAllProducts() {
+        log.info("Fetching all products");
+
+        return productMapper.toListDto(productRepository.findAll());
     }
 
-    public Products getProductById(Long productId) {
+    public List<ProductDto> findProductsByTitle(String title) {
+        log.info("Fetching products by name containing: {}", title);
+
+        return productMapper.toListDto(productRepository.findByTitleContaining(title));
+    }
+
+    public ProductDto getProductById(Long productId) {
         log.info("Fetching product by ID: {}", productId);
-        return productRepository.findById(productId)
-                .orElse(null);
+
+        Products product = productRepository.findById(productId)
+                .orElseThrow(() -> new AitekoException(ErrorType.NOT_FOUND, "Продукт c ID " + productId + " не найден"));
+        return productMapper.toDto(product);
     }
 
-    public Products createProduct(Products product) {
-        log.info("Creating a new product: {}", product);
-        Users adminUser = userRepository.findByUsername("admin");
-        if (product.getUser() == null) {
-            // Если пользователь не указан, устанавливаем пользователя "admin" в качестве владельца продукта
-            product.setUser(adminUser);
-        }
-        product.setCreation_date(LocalDateTime.now());
-        return productRepository.save(product);
+    public void createProduct(ProductDto productDto) {
+        log.info("Creating a new product: {}", productDto);
+
+        Products product = productMapper.toEntity(productDto);
+        productRepository.save(product);
     }
 
-    public Products updateProduct(Long productId, Products updatedProduct) {
+    public void updateProduct(Long productId, ProductDto updatedProduct) {
         log.info("Updating product with ID: {}. New product details: {}", productId, updatedProduct);
-        Products productFromDb = getProductById(productId);
-        BeanUtils.copyProperties(updatedProduct, productFromDb, "id");
-        return productRepository.save(productFromDb);
+
+        Products productFromDb = productRepository.findById(productId)
+                .orElseThrow(() -> new AitekoException(ErrorType.NOT_FOUND, "Продукт c ID " + productId + " не найден"));
+
+        productFromDb.setTitle(updatedProduct.getTitle());
+        productFromDb.setDescription(updatedProduct.getDescription());
+        productFromDb.setPrice(updatedProduct.getPrice());
+
+        productRepository.save(productFromDb);
     }
 
     public void deleteProduct(Long productId) {
         log.info("Deleting product with ID: {}", productId);
-        Products product = getProductById(productId);
-        productRepository.delete(product);
-    }
 
-    public List<Products> findProductsByTitle(String title) {
-        log.info("Fetching products by name containing: {}", title);
-        return productRepository.findByTitleContaining(title);
+        productRepository.deleteById(productId);
     }
 }

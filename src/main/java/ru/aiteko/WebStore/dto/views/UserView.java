@@ -1,4 +1,4 @@
-package ru.aiteko.WebStore.entity.views;
+package ru.aiteko.WebStore.dto.views;
 
 public class UserView {
 

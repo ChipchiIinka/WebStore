@@ -1,4 +1,4 @@
-package ru.aiteko.WebStore.exeptions;
+package ru.aiteko.WebStore.exception;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.data.crossstore.ChangeSetPersister;

@@ -2,11 +2,17 @@ package ru.aiteko.WebStore.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import ru.aiteko.WebStore.dto.NewsDto;
+import ru.aiteko.WebStore.dto.request.NewsPageDto;
 import ru.aiteko.WebStore.entity.NewsAndPromotions;
+import ru.aiteko.WebStore.exception.AitekoException;
+import ru.aiteko.WebStore.exception.ErrorType;
 import ru.aiteko.WebStore.repository.NewsRepository;
-import java.time.LocalDateTime;
+import ru.aiteko.WebStore.service.mapper.NewsMapper;
+
 import java.util.List;
 
 @Slf4j
@@ -15,34 +21,45 @@ import java.util.List;
 public class NewsService {
 
     private final NewsRepository newsRepository;
+    private final NewsMapper newsMapper;
 
-    public List<NewsAndPromotions> getAllNews() {
-        log.info("Fetching all products");
-        return newsRepository.findAll();
+    public List<NewsDto> getAllNews() {
+        log.info("Fetching all news");
+
+        return newsMapper.toListDto(newsRepository.findAll());
     }
 
-    public NewsAndPromotions getNewsById(Long newsId) {
+    public NewsDto getNewsById(Long newsId) {
         log.info("Fetching news by ID: {}", newsId);
-        return newsRepository.findById(newsId)
-                .orElse(null);
+
+        NewsAndPromotions news = newsRepository.findById(newsId)
+                .orElseThrow(() -> new AitekoException(ErrorType.NOT_FOUND,
+                        "Новость или акция c ID " + newsId + " не найдена"));
+        return newsMapper.toDto(news);
     }
 
-    public NewsAndPromotions createNews(NewsAndPromotions news) {
-        log.info("Creating a new news: {}", news);
-        news.setCreation_date(LocalDateTime.now());
-        return newsRepository.save(news);
+    public void createNews(NewsDto newsDto) {
+        log.info("Creating a new news: {}", newsDto);
+
+        NewsAndPromotions news = newsMapper.toEntity(newsDto);
+        newsRepository.save(news);
     }
 
-    public NewsAndPromotions updateNews(Long newsId, NewsAndPromotions updatedNews) {
+    public void updateNews(Long newsId, NewsDto updatedNews) {
         log.info("Updating news with ID: {}. New news details: {}", newsId, updatedNews);
-        NewsAndPromotions newsFromDb = getNewsById(newsId);
-        BeanUtils.copyProperties(updatedNews, newsFromDb, "id");
-        return newsRepository.save(newsFromDb);
+
+        NewsAndPromotions newsFromDb = newsRepository.findById(newsId)
+                .orElseThrow(() -> new AitekoException(ErrorType.NOT_FOUND,
+                        "Новость или акция c ID " + newsId + " не найдена"));
+        newsFromDb.setTitle(updatedNews.getTitle());
+        newsFromDb.setDescription(updatedNews.getDescription());
+
+        newsRepository.save(newsFromDb);
     }
 
     public void deleteNews(Long newsId) {
         log.info("Deleting news with ID: {}", newsId);
-        NewsAndPromotions news= getNewsById(newsId);
-        newsRepository.delete(news);
+
+        newsRepository.deleteById(newsId);
     }
 }

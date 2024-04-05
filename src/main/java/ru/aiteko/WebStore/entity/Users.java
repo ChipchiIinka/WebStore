@@ -6,8 +6,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.aiteko.WebStore.entity.views.UserView;
-import java.util.HashSet;
+import ru.aiteko.WebStore.dto.views.UserView;
+
 import java.util.Set;
 
 @Entity
@@ -16,10 +16,10 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @Schema(description = "User entity")
-public class Users {
+public class Users{
 
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     @Schema(hidden = true)
     private long id;
@@ -38,13 +38,23 @@ public class Users {
     @Schema(description = "User email", example = "Example email@example.com")
     private String email;
 
-    @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
-    @CollectionTable(name = "role", joinColumns = @JoinColumn(name ="user_id"))
-    @Enumerated(EnumType.STRING)
-    @Schema(hidden = true)
-    private Set<Role> role;
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
+    private Set<Role> roles;
 
-    @OneToMany(mappedBy = "user")
-    @Schema(hidden = true)
-    private Set<ShoppingCarts> shoppingCarts = new HashSet<>();
+//    @OneToMany(mappedBy = "user")
+//    @Schema(hidden = true)
+//    private Set<ShoppingCarts> shoppingCarts = new HashSet<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "shopping_cart",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "products")
+    )
+    private Set<Products> shoppingCart;
+
+
 }
